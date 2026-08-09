@@ -1,0 +1,15 @@
+pluginManagement {
+    repositories {
+        google()
+        gradlePluginPortal()
+    }
+
+    def flutterGradlePlugin = "dev.flutter.flutter-gradle-plugin"
+    def flutterGradleVersion = "3.29.0"
+
+    plugins {
+        id flutterGradlePlugin version flutterGradleVersion apply false
+    }
+}
+
+include ':app'
