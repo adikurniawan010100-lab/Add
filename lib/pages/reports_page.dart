@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 import '../services/db_service.dart';
 import '../services/export_service.dart';
 import '../models/transaction_model.dart';
@@ -40,6 +39,8 @@ class _ReportsPageState extends State<ReportsPage> {
     final formatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
     final categories = getCategoryTotals();
     final totalExpense = categories.values.fold<double>(0, (sum, val) => sum + val);
+    final sortedCats = categories.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
 
     return Scaffold(
       appBar: AppBar(title: const Text("Laporan")),
@@ -47,29 +48,54 @@ class _ReportsPageState extends State<ReportsPage> {
           ? const Center(child: Text("Belum ada data laporan"))
           : Column(
               children: [
+                // Bar chart custom
                 SizedBox(
-                  height: 250,
-                  child: SfCircularChart(
-                    title: const ChartTitle(text: 'Pengeluaran per Kategori'),
-                    series: <CircularSeries<ChartEntry, String>>[
-                      CircularSeries<ChartEntry, String>(
-                        dataSource: categories.entries.map((e) => ChartEntry(e.key, e.value)).toList(),
-                        xValueMapper: (data, _) => data.category,
-                        yValueMapper: (data, _) => data.amount,
-                        dataLabelMapper: (data, _) => formatter.format(data.amount),
-                        name: 'Kategori',
-                      ),
-                    ],
+                  height: 220,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: sortedCats.isEmpty
+                        ? const SizedBox.shrink()
+                        : Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: sortedCats.asMap().entries.map((entry) {
+                              final cat = entry.value;
+                              final maxHeight = sortedCats.first.value;
+                              final barHeight = totalExpense > 0 ? (cat.value / maxHeight) * 160 : 0;
+                              final pct = totalExpense > 0 ? (cat.value / totalExpense * 100) : 0;
+                              return Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Text(pct.toStringAsFixed(0) + '%', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                                    const SizedBox(height: 4),
+                                    Container(
+                                      height: barHeight,
+                                      decoration: BoxDecoration(
+                                        color: Colors.primaries[entry.key % Colors.primaries.length],
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(cat.key.substring(0, cat.key.length.clamp(0, 4)), style: TextStyle(fontSize: 9)),
+                                    Text(formatter.format(cat.value), style: TextStyle(fontSize: 9, color: Colors.grey)),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
                   ),
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: categories.length,
+                    itemCount: sortedCats.length,
                     itemBuilder: (_, index) {
-                      final entry = categories.entries.elementAt(index);
+                      final entry = sortedCats[index];
                       final pct = totalExpense > 0 ? (entry.value / totalExpense * 100) : 0;
                       return ListTile(
-                        leading: const CircleAvatar(child: Icon(Icons.category)),
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.primaries[index % Colors.primaries.length].withOpacity(0.3),
+                          child: const Icon(Icons.category),
+                        ),
                         title: Text(entry.key),
                         trailing: Text("${formatter.format(entry.value)} (${pct.toStringAsFixed(1)}%)"),
                       );
@@ -112,11 +138,4 @@ class _ReportsPageState extends State<ReportsPage> {
       ),
     );
   }
-}
-
-class ChartEntry {
-  final String category;
-  final double amount;
-
-  ChartEntry(this.category, this.amount);
 }
