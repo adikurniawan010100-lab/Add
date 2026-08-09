@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="LaunchTheme" parent="@android:style/Theme.Material.NoTitleBar">
+        <!-- Display window background. This is a custom drawable that can be in the drawable folder -->
+        <item name="android:windowBackground">@drawable/launch_background</item>
+    </style>
+
+    <style name="NormalTheme" parent="@android:style/Theme.Material3.DayNight.NoActionBar">
+        <!-- Match the colors of the launcher icon -->
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+    </style>
+
+    <style name="SplashScreen" parent="android:Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:statusBarColor">@color/md_theme_light_primary</item>
+    </style>
+
+    <style name="SplashScreen.Light" parent="android:Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@drawable/launch_background_light</item>
+        <item name="android:statusBarColor">@color/white</item>
+    </style>
+</resources>
