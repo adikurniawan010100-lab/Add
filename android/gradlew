@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Placeholder gradle wrapper — actual gradle is invoked by GitHub Actions / CI
+
+exec gradle "$@"
