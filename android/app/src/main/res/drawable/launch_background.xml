@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Modify this file instead of modifying the launcher screen in the manifest. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/md_theme_light_primary" />
+    <!-- You can add your own image (e.g., app/logo) inside the layer-list below -->
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/ic_launch_logo" />
+    </item>
+</layer-list>
