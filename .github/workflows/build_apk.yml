@@ -17,25 +17,19 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: '3.24.0'
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Analyze (optional)
-        continue-on-error: true
-        run: flutter analyze
+      - name: Build APK (arm64)
+        run: flutter build apk --release --split-per-abi --target-platform android-arm64
 
-      - name: Build APK
-        run: flutter build apk --release --split-per-abi
-
-      - name: Show build output
+      - name: Show output
         run: |
-          echo "=== Build outputs ==="
-          find build/app/outputs/flutter-apk/ -name "*.apk" -exec ls -la {} \; 2>/dev/null || echo "No APKs found"
+          find build/app/outputs/flutter-apk/ -name "*.apk" | xargs ls -la
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: kasku-app-release
-          path: build/app/outputs/flutter-apk/
+          name: kasku-app-arm64
+          path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
