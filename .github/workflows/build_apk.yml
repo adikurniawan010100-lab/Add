@@ -1,13 +1,6 @@
 name: Build APK
 
 on:
-  push:
-    paths:
-      - 'pubspec.yaml'
-      - 'lib/**'
-      - 'android/**'
-      - '.github/**'
-    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -22,6 +15,16 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+
+      - name: Generate fresh Android project
+        run: |
+          mkdir -p /tmp/blank_app
+          cd /tmp/blank_app
+          flutter create --platforms=android --no-pub -t app blank_app
+          cp -r /tmp/blank_app/blank_app/android ./android_fresh
+          rm -rf android
+          mv android_fresh android
+          ls -la android/
 
       - name: Flutter pub get
         run: flutter pub get
