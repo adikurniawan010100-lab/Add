@@ -16,18 +16,42 @@ jobs:
         with:
           channel: stable
 
-      - name: Backup source files
-        run: |
-          cp -r lib lib_backup
-          cp pubspec.yaml pubspec_backup.yaml
+      - name: Backup lib directory
+        run: cp -r lib lib_backup
 
       - name: Regenerate Android project
         run: |
           rm -rf android
           flutter create --platforms=android .
-          rm -rf lib .dart_tool pubspec.lock
+          rm -rf lib .dart_tool
           mv lib_backup lib
-          mv pubspec_backup.yaml pubspec.yaml
+
+      - name: Add flutter_localizations to pubspec
+        run: |
+          python3 << 'PYEOF'
+          import re
+          with open('pubspec.yaml', 'r') as f:
+              content = f.read()
+          
+          if 'flutter_localizations' not in content:
+              # Add flutter_localizations after flutter sdk
+              content = re.sub(
+                  r'(  flutter:\n    sdk: flutter)',
+                  r'\1\n  flutter_localizations:\n    sdk: flutter',
+                  content
+              )
+              with open('pubspec.yaml', 'w') as f:
+                  f.write(content)
+              print("Added flutter_localizations")
+          else:
+              print("flutter_localizations already present")
+          
+          # Verify
+          with open('pubspec.yaml', 'r') as f:
+              for line in f:
+                  if 'flutter' in line:
+                      print(f'  {line.rstrip()}')
+          PYEOF
 
       - name: Flutter pub get
         run: flutter pub get
