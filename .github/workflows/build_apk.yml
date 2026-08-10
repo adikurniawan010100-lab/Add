@@ -23,22 +23,6 @@ jobs:
         with:
           channel: stable
 
-      - name: Backup source files
-        run: |
-          cp -r lib lib_backup
-          cp pubspec.yaml pubspec_backup.yaml
-
-      - name: Regenerate Android project
-        run: |
-          rm -rf android
-          flutter create --platforms=android .
-
-      - name: Restore source files
-        run: |
-          rm -rf lib
-          mv lib_backup lib
-          mv pubspec_backup.yaml pubspec.yaml
-
       - name: Flutter pub get
         run: flutter pub get
 
