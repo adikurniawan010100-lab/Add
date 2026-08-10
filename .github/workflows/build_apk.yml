@@ -25,7 +25,7 @@ jobs:
         run: |
           rm -rf android
           flutter create --platforms=android .
-          rm -rf lib
+          rm -rf lib .dart_tool pubspec.lock
           mv lib_backup lib
           mv pubspec_backup.yaml pubspec.yaml
 
