@@ -27,7 +27,7 @@ jobs:
         run: |
           rm -rf android
           flutter pub get
-          flutter create --platforms=android --org-name com.kasku .
+          flutter create --platforms=android .
 
       - name: Build APK (arm64)
         run: flutter build apk --release --split-per-abi --target-platform android-arm64
