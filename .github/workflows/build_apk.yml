@@ -3,7 +3,6 @@ name: Build APK
 on:
   push:
     paths:
-      - '!**'
       - 'pubspec.yaml'
       - 'lib/**'
       - 'android/**'
@@ -25,10 +24,10 @@ jobs:
           channel: stable
 
       - name: Regenerate Android project
-        run: flutter create --platforms=android --project-app-path=. .
-
-      - name: Install dependencies
-        run: flutter pub get
+        run: |
+          rm -rf android
+          flutter pub get
+          flutter create --platforms=android --org-name com.kasku .
 
       - name: Build APK (arm64)
         run: flutter build apk --release --split-per-abi --target-platform android-arm64
