@@ -1,10 +1,10 @@
-name: Build APK
+name: Generate Android
 
 on:
   workflow_dispatch:
 
 jobs:
-  build-apk:
+  generate-android:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,32 +18,35 @@ jobs:
 
       - name: Backup source files
         run: |
-          cp -r lib lib_backup
-          cp pubspec.yaml pubspec_backup.yaml
-          cp .metadata .backup_metadata 2>/dev/null || true
-          cp android/app/src/main/AndroidManifest.xml /tmp/ || true
+          mkdir -p /tmp/backup
+          cp -r lib /tmp/backup/
+          cp pubspec.yaml /tmp/backup/
+          cp .metadata /tmp/backup/ 2>/dev/null || true
 
-      - name: Regenerate Android project
+      - name: Generate fresh Android project
         run: |
           rm -rf android
           flutter create --platforms=android --no-pub .
-          rm -rf lib
-          mv lib_backup lib
-          mv pubspec_backup.yaml pubspec.yaml
-          mv .backup_metadata .metadata 2>/dev/null || true
 
-      - name: Flutter pub get
-        run: flutter pub get
-
-      - name: Build APK (arm64)
-        run: flutter build apk --release --split-per-abi --target-platform android-arm64
-
-      - name: Show output
+      - name: Restore source files
         run: |
-          find build/app/outputs/flutter-apk/ -name "*.apk" | xargs ls -la
+          rm -rf lib
+          cp -r /tmp/backup/lib .
+          cp /tmp/backup/pubspec.yaml .
+          cp /tmp/backup/.metadata . 2>/dev/null || true
+          rm -rf /tmp/backup
 
-      - name: Upload artifact
+      - name: Upload Android project
         uses: actions/upload-artifact@v4
         with:
-          name: kasku-app-arm64
-          path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+          name: android-project
+          path: android/
+
+      - name: Upload all source
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-files
+          path: |
+            lib/
+            pubspec.yaml
+            .metadata
