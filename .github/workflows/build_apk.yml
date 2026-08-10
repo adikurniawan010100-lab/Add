@@ -23,29 +23,6 @@ jobs:
         with:
           channel: stable
 
-      - name: Backup source files
-        run: |
-          echo "Backing up..."
-          mkdir -p _backup
-          cp -r lib _backup/lib
-          cp pubspec.yaml _backup/
-          ls -la _backup/
-
-      - name: Regenerate Android project
-        run: |
-          rm -rf android
-          flutter create --platforms=android --no-pub .
-          ls -la android/
-
-      - name: Restore source files
-        run: |
-          echo "Restoring..."
-          rm -rf lib
-          mv _backup/lib lib
-          mv _backup/pubspec.yaml pubspec.yaml
-          rm -rf _backup
-          ls lib/
-
       - name: Flutter pub get
         run: flutter pub get
 
