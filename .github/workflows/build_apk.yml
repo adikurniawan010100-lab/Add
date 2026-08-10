@@ -21,9 +21,9 @@ jobs:
           mkdir -p /tmp/blank_app
           cd /tmp/blank_app
           flutter create --platforms=android --no-pub -t app blank_app
-          cp -r /tmp/blank_app/blank_app/android ./android_fresh
-          rm -rf android
-          mv android_fresh android
+          # Copy fresh android/ and .metadata
+          cp -r /tmp/blank_app/blank_app/android .
+          cp /tmp/blank_app/blank_app/.metadata .metadata
           ls -la android/
 
       - name: Flutter pub get
